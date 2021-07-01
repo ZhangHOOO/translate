@@ -64,7 +64,7 @@
         var all = $("#transformation");
         // 中英文双译
         const regChinese = /^[\u2E80-\u9FFF]+$/;
-        const regEnglish = /^[a-zA-Z]{0,20}$/;
+        const regEnglish = /^[a-zA-Z]+$/;
         if (regChinese.test(query)) {
           console.log("纯中文");
           language = "zh";
