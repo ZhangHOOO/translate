@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <style>
+      *,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      main {
+        display: flex;
+        margin: 20px;
+      }
+
+      main > div {
+        height: 200px;
+        flex: 1;
+      }
+
+      main > div:nth-child(1) {
+        background-color: #fff;
+      }
+
+      main > div:nth-child(2) {
+        background-color: #f0f0f0;
+      }
+
+      input {
+        height: 100%;
+        width: 100%;
+        font-size: 30px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div>
+        <input type="text" placeholder="请输入要翻译内容" id="original" />
+      </div>
+      <div>
+        <input type="text" placeholder="输出内容" id="transformation" />
+      </div>
+    </main>
+    <script
+      src="JS/jquery-1.8.3.min.js"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+    <script src="JS/md5.js" type="text/javascript" charset="utf-8"></script>
+    <script
+      src="JS/translateDom.js"
+      type="text/javascript"
+      charset="utf-8"
+    ></script>
+    <script type="text/javascript">
+      function ajax(event) {
+        event.preventDefault();
+        // 初始值
+        var query = $("#original").val();
+        // 翻译值
+        var all = $("#transformation");
+        // 中英文双译
+        const regChinese = /^[\u2E80-\u9FFF]+$/;
+        const regEnglish = /^[a-zA-Z]{0,20}$/;
+        if (regChinese.test(query)) {
+          console.log("纯中文");
+          language = "zh";
+          language2 = "en";
+          switchLanguages(language, language2, query, all);
+        } else if (regEnglish.test(query)) {
+          console.log("纯英文");
+          language = "en";
+          language2 = "zh";
+          switchLanguages(language, language2, query, all);
+        }
+      }
+
+      function throttle(fn, delay = 1000) {
+        let canRun = true; // 通过闭包保存一个标记 代表函数可以执行了
+        return function () {
+          if (!canRun) return; // 在函数开头判断标记是否为true，不为true则return
+          canRun = false; // 立即设置为false
+          setTimeout(() => {
+            // 将外部传入的函数的执行放在setTimeout中
+            // arguments是利用了闭包传参  setTimeout不能接受参数
+            fn.apply(this, arguments);
+            // 最后在setTimeout执行完毕后再把标记设置为true(关键)表示可以执行下一次循环了。当定时器没有执行的时候标记永远是false，在开头被return掉
+            canRun = true;
+          }, delay);
+        };
+      }
+
+      let debounceAjax = throttle(ajax, 500);
+      $("#original").bind("input", function (event) {
+        debounceAjax(event);
+      });
+    </script>
+  </body>
+</html>
